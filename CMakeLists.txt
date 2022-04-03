@@ -25,11 +25,14 @@ add_message_files(
   FILES
   arrbbox.msg
   bbox.msg
+  Object.msg
+  ObjectArray.msg
 )
 
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
 )
 
 
@@ -59,18 +62,18 @@ include_directories(
 add_library(vision_pipeline src/visionpipeline.cpp)
 target_link_libraries(vision_pipeline  ${realsense2_LIBRARY} ${OpenCV_LIBRARIES} ${TORCH_LIBRARIES})
 
-add_executable(object_detection_from_depth src/depth.cpp)
-add_executable(object_detection_from_depth_2 src/obj_detection_node.cpp)
+add_executable(depth_node src/depth.cpp)
+add_executable(object_detection_from_depth src/detectornode.cpp src/object_detection_node.cpp)
 
+add_dependencies(depth_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(object_detection_from_depth ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(object_detection_from_depth_2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 # Specify libraries to link a library or executable target against
-target_link_libraries(object_detection_from_depth
+target_link_libraries(depth_node
   ${catkin_LIBRARIES}
   vision_pipeline
 )
-target_link_libraries(object_detection_from_depth_2
+target_link_libraries(object_detection_from_depth
   ${catkin_LIBRARIES}
   vision_pipeline
 )

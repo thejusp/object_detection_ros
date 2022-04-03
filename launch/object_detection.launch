@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="object_detection_ros" type="object_detection_from_depth" name="object_detection" />
+</launch>
