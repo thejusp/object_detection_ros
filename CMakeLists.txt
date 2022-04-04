@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
   sensor_msgs
+  tf2_geometry_msgs
 )
 
 
@@ -64,9 +65,11 @@ target_link_libraries(vision_pipeline  ${realsense2_LIBRARY} ${OpenCV_LIBRARIES}
 
 add_executable(depth_node src/depth.cpp)
 add_executable(object_detection_from_depth src/detectornode.cpp src/object_detection_node.cpp)
+add_executable(object_handler_node src/object_handler_node.cpp)
 
 add_dependencies(depth_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(object_detection_from_depth ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(object_handler_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 # Specify libraries to link a library or executable target against
 target_link_libraries(depth_node
@@ -77,4 +80,10 @@ target_link_libraries(object_detection_from_depth
   ${catkin_LIBRARIES}
   vision_pipeline
 )
+
+target_link_libraries(object_handler_node
+  ${catkin_LIBRARIES}
+  vision_pipeline
+)
+
 

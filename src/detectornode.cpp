@@ -7,12 +7,14 @@ DetectorNode::DetectorNode(){
     bounding_box_topic  = "detection_bbox";
     depth_image_topic   = "depth_image";
     maker_frame_id      = "camera_link";
+    object_topic        = "objects";
 
     show_preview        = true;
 
-    marker_life_time    = 5.0;
+    marker_life_time    = 500.0;
     marker_pub          = n.advertise<visualization_msgs::MarkerArray>(marker_topic, 1);
     detection_publish   = n.advertise<object_detection_ros::arrbbox>(depth_image_topic, 1);
+    object_pub          = n.advertise<object_detection_ros::ObjectArray>(object_topic,1);
 
 
 }
@@ -116,8 +118,11 @@ int DetectorNode::run(){
         }
         if (objects_array.size() > 0){
             visualization_msgs::MarkerArray marker_array;
+            object_detection_ros::ObjectArray object_array;
             populate_marker_msg(marker_array,maker_frame_id, objects_array, names);
+            populate_object_msg(object_array, objects_array, names);
             marker_pub.publish(marker_array);
+            object_pub.publish(object_array);
             detection_publish.publish(arr_bbox_msg);
             
         }
@@ -186,9 +191,9 @@ void DetectorNode::populate_marker_msg(visualization_msgs::MarkerArray &marker_a
 
         poseIn.header.frame_id = "camera_link";
         poseIn.header.stamp = ros::Time::now();
-        poseIn.pose.position.x = p.x;
-        poseIn.pose.position.y = p.y;
-        poseIn.pose.position.z = p.z;
+        poseIn.pose.position.x    = p.x;
+        poseIn.pose.position.y    = p.y;
+        poseIn.pose.position.z    = p.z;
         poseIn.pose.orientation.x = 0.0;
         poseIn.pose.orientation.y = 0.0;
         poseIn.pose.orientation.z = 0.0;
@@ -313,5 +318,34 @@ void DetectorNode::populate_marker_msg(visualization_msgs::MarkerArray &marker_a
         
     }
 
+    return; 
+}
+
+
+
+void DetectorNode::populate_object_msg(object_detection_ros::ObjectArray &object_array, std::vector<geometry_msgs::Point> objects_array, std::vector<std::string> &names){
+
+    uint16_t counter;
+    object_array.object_array.clear();
+    object_array.header.stamp = ros::Time::now();
+    object_array.header.frame_id = "camera_link";
+
+    
+    for(auto p : objects_array){
+
+        geometry_msgs::PoseStamped poseIn;
+        object_detection_ros::Object obj;
+
+        obj.pose.position.x = p.x;
+        obj.pose.position.y = p.y;
+        obj.pose.position.z = p.z;
+        obj.pose.orientation.x = 0.0;
+        obj.pose.orientation.y = 0.0;
+        obj.pose.orientation.z = 0.0;
+        obj.pose.orientation.w = 1.0;
+        obj.name.data = names.at(counter);
+        object_array.object_array.push_back(obj);
+        counter++; 
+    }
     return; 
 }

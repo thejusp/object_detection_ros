@@ -38,12 +38,14 @@ class DetectorNode{
 
     ros::Publisher marker_pub;
     ros::Publisher detection_publish;
+    ros::Publisher object_pub;
     ros::NodeHandle n;
 
     std::string marker_topic;
     std::string bounding_box_topic;
     std::string depth_image_topic;
     std::string maker_frame_id;
+    std::string object_topic;
 
     double marker_life_time;
     bool show_preview;
@@ -52,6 +54,8 @@ class DetectorNode{
     void convert_depth_pixel_to_metric_coordinate(double &X, double &Y, double &Z, double depth, double pixel_x, double pixel_y, rs2_intrinsics camera_intrinsics);
     void populate_marker_msg(visualization_msgs::MarkerArray &marker_array, std::string frame_id, std::vector<geometry_msgs::Point> objects_array, std::vector<std::string> &names);
     bool trasnformPoint(geometry_msgs::PoseStamped &poseIn, geometry_msgs::PoseStamped &poseOut,std::string to_frame);
+    void populate_object_msg(object_detection_ros::ObjectArray &object_array, std::vector<geometry_msgs::Point> objects_array, std::vector<std::string> &names);
+
 
     public:
     
